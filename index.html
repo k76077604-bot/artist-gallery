@@ -1,252 +1,1162 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta
+  name="viewport"
+  content="width=device-width,
+  initial-scale=1.0,
+  maximum-scale=1.0,
+  user-scalable=no"
+>
+
 <title>Artist Gallery Preview</title>
+
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{touch-action: none;
--webkit-user-select:none;
--webkit-touch-callout:none;
-overflow:hidden;
-  background:#fff;
-  height:100vh;
+
+/* =========================
+   基础
+========================= */
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,
+body{
+  width:100%;
+  height:100%;
   overflow:hidden;
+  background:#fff;
+}
+
+body{
+
   font-family:Arial,sans-serif;
+
+  background:#fff;
+
+  height:100vh;
+
+  overflow:hidden;
+
+  touch-action:none;
+
   user-select:none;
   -webkit-user-select:none;
+
+  -webkit-touch-callout:none;
 }
+
+
+/* =========================
+   画廊
+========================= */
+
 .gallery{
+
   width:100vw;
   height:100vh;
+
   display:flex;
+
   align-items:center;
+
   overflow:hidden;
+
   cursor:default;
 }
+
+
 .track{
+
   display:flex;
+
   align-items:flex-end;
+
   will-change:transform;
 }
+
+
+/* =========================
+   人物照片
+========================= */
+
 .person{
-    flex:none;
-    width:360px;
-    height:78vh;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-    cursor:pointer;
-    opacity:.35;
-    filter:blur(10px);
-    transform:scale(.82);
-    transition:.45s ease;
-    user-select:none;
-    position:relative;
-    z-index:2;
+
+  flex:none;
+
+  width:360px;
+
+  height:78vh;
+
+  display:flex;
+
+  align-items:flex-end;
+
+  justify-content:center;
+
+  cursor:pointer;
+
+  opacity:.35;
+
+  filter:blur(10px);
+
+  transform:scale(.82);
+
+  transition:.45s ease;
+
+  user-select:none;
+  -webkit-user-select:none;
+
+  position:relative;
+
+  z-index:2;
 }
+
+
 .person img{
-    height:100%;
-    width:auto;
-    display:block;
-    pointer-events:auto;
-    cursor:pointer;
+
+  height:100%;
+
+  width:auto;
+
+  display:block;
+
+  object-fit:contain;
+
+  pointer-events:none;
+
+  cursor:pointer;
+
+  user-select:none;
+  -webkit-user-select:none;
+
+  -webkit-user-drag:none;
 }
+
+
+/* =========================
+   中间人物
+========================= */
+
 .person.active{
+
   opacity:1;
+
   filter:none;
-  transform:scale(1.18) translateY(-15px);
+
+  transform:
+    scale(1.18)
+    translateY(-15px);
+
   z-index:5;
 }
+
+
+/* =========================
+   右下角提示
+========================= */
+
 .hint{
+
   position:fixed;
+
   right:30px;
+
   bottom:25px;
+
   color:#aaa;
+
   font-size:12px;
+
+  pointer-events:none;
 }
+
+
+/* =========================
+   视频弹窗
+========================= */
+
 .video-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.75);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
+
+  position:fixed;
+
+  inset:0;
+
+  background:rgba(0,0,0,.75);
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  z-index:9999;
+
+  padding:20px;
 }
+
+
 .video-container{
-    position:relative;
-    width:75%;
-    max-width:1100px;
+
+  position:relative;
+
+  width:75%;
+
+  max-width:1100px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
 }
+
+
 .video-container video{
-    width:100%;
-    max-height:80vh;
-    border-radius:28px;
-    object-fit:contain;
+
+  width:100%;
+
+  max-height:80vh;
+
+  border-radius:28px;
+
+  object-fit:contain;
+
+  background:#000;
+
+  display:block;
 }
+
+
+/* =========================
+   关闭按钮
+========================= */
+
 .close-video{
-    position:absolute;
-    right:-20px;
-    top:-20px;
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    border:none;
-    background:white;
-    color:black;
-    font-size:32px;
-    cursor:pointer;
+
+  position:absolute;
+
+  right:-20px;
+
+  top:-20px;
+
+  width:50px;
+
+  height:50px;
+
+  border-radius:50%;
+
+  border:none;
+
+  background:white;
+
+  color:black;
+
+  font-size:32px;
+
+  line-height:50px;
+
+  text-align:center;
+
+  cursor:pointer;
+
+  z-index:20;
+
+  -webkit-appearance:none;
 }
+
+
+/* =========================
+   iPad / 手机
+========================= */
+
+@media (max-width:768px){
+
+  .person{
+
+    width:300px;
+
+    height:74vh;
+
+  }
+
+  .person.active{
+
+    transform:
+      scale(1.10)
+      translateY(-10px);
+
+  }
+
+  .video-overlay{
+
+    padding:12px;
+
+  }
+
+  .video-container{
+
+    width:96%;
+
+  }
+
+  .video-container video{
+
+    max-height:78vh;
+
+    border-radius:18px;
+
+  }
+
+  .close-video{
+
+    right:-5px;
+
+    top:-5px;
+
+    width:44px;
+
+    height:44px;
+
+    line-height:44px;
+
+    font-size:28px;
+
+  }
+
+  .hint{
+
+    right:15px;
+
+    bottom:15px;
+
+  }
+
+}
+
 </style>
+
 </head>
+
+
 <body>
 
-<div class="gallery" id="gallery">
-  <div class="track" id="track"></div>
+
+<!-- =========================
+     画廊
+========================= -->
+
+<div
+  class="gallery"
+  id="gallery"
+>
+
+  <div
+    class="track"
+    id="track"
+  ></div>
+
 </div>
 
-<div class="hint">← drag →</div>
 
-<audio id="voice" src="zyr.m4a"></audio>
+<div class="hint">
+  ← drag →
+</div>
+
+
+<!-- =========================
+     音频
+========================= -->
+
+<audio
+  id="voice"
+  src="zyr.m4a"
+  preload="none"
+></audio>
+
 
 <script>
-const imgs=[
-"p1.PNG",
-"p2.PNG",
-"p3.PNG",
-"p4.PNG",
-"p5.PNG"
+
+
+/* =========================
+   图片
+========================= */
+
+const imgs = [
+
+  "p1.PNG",
+
+  "p2.PNG",
+
+  "p3.PNG",
+
+  "p4.PNG",
+
+  "p5.PNG"
+
 ];
 
-const videoMap={
-    "p1.PNG":"s1.mp4",
-    "p2.PNG":"s2.mp4",
-    "p3.PNG":"s3.mp4",
-    "p4.PNG":"s4.mp4",
-    "p5.PNG":"s5.mp4"
+
+/* =========================
+   图片对应的视频
+========================= */
+
+const videoMap = {
+
+  "p1.PNG":"s1.mp4",
+
+  "p2.PNG":"s2.mp4",
+
+  "p3.PNG":"s3.mp4",
+
+  "p4.PNG":"s4.mp4",
+
+  "p5.PNG":"s5.mp4"
+
 };
 
-const track=document.getElementById("track");
-const gallery=document.getElementById("gallery");
 
-let list=[
-...imgs,
-...imgs,
-...imgs,
-...imgs,
-...imgs
+/* =========================
+   获取元素
+========================= */
+
+const track =
+  document.getElementById("track");
+
+const gallery =
+  document.getElementById("gallery");
+
+
+/* =========================
+   重复图片
+========================= */
+
+let list = [
+
+  ...imgs,
+  ...imgs,
+  ...imgs,
+  ...imgs,
+  ...imgs
+
 ];
 
-// 只用 data 属性标记图片名，不再绑定 inline onclick，也不重复 addEventListener
-track.innerHTML=list.map(src=>`
-<div class="person" data-src="${src}">
-    <img src="${src}">
-</div>
-`).join("");
-document.querySelectorAll(".person").forEach(item=>{
-    item.addEventListener("click",()=>{
-        openVideo(item.dataset.src);
-    });
-});
 
-let x=-window.innerWidth;
-let minX=-(track.scrollWidth-window.innerWidth);
-let dragging=false;
-let start=0;
-let moved=0;
-let velocity=0;
+/* =========================
+   创建照片
+========================= */
+
+track.innerHTML = list.map(src => `
+
+  <div
+    class="person"
+    data-src="${src}"
+  >
+
+    <img
+      src="${src}"
+      alt=""
+      draggable="false"
+    >
+
+  </div>
+
+`).join("");
+
+
+/* =========================
+   拖动变量
+========================= */
+
+let x = -window.innerWidth;
+
+let minX = 0;
+
+let dragging = false;
+
+let start = 0;
+
+let moved = 0;
+
+let velocity = 0;
+
+
+/*
+  记录用户按下时的照片
+
+  这是这次修复 iPad 点击问题的关键
+*/
+
+let activePerson = null;
+
+
+/* =========================
+   计算拖动范围
+========================= */
+
+function updateBounds(){
+
+  const totalWidth =
+    track.scrollWidth;
+
+  minX =
+    Math.min(
+      0,
+      -(totalWidth - window.innerWidth)
+    );
+
+
+  if(x > 0){
+
+    x = 0;
+
+  }
+
+
+  if(x < minX){
+
+    x = minX;
+
+  }
+
+}
+
+
+window.addEventListener(
+  "resize",
+  updateBounds
+);
+
+
+setTimeout(
+  updateBounds,
+  300
+);
+
+
+/* =========================
+   画面循环
+========================= */
 
 function render(){
-  track.style.transform=`translateX(${x}px)`;
-  const center=innerWidth/2;
-  document.querySelectorAll(".person").forEach(p=>{
-    const r=p.getBoundingClientRect();
-    const d=Math.abs(center-(r.left+r.width/2));
-    p.classList.toggle("active", d<160);
-  });
+
+  track.style.transform =
+    `translate3d(${x}px,0,0)`;
+
+
+  const center =
+    window.innerWidth / 2;
+
+
+  document
+    .querySelectorAll(".person")
+    .forEach(person => {
+
+      const r =
+        person.getBoundingClientRect();
+
+
+      const d =
+        Math.abs(
+          center -
+          (
+            r.left +
+            r.width / 2
+          )
+        );
+
+
+      person.classList.toggle(
+        "active",
+        d < 160
+      );
+
+    });
+
+
   requestAnimationFrame(render);
+
 }
+
+
 render();
 
-gallery.addEventListener("pointerdown",e=>{
- dragging=true;
- start=e.clientX;
- moved=0;
- velocity=0;
- gallery.setPointerCapture(e.pointerId);
-});
 
-gallery.addEventListener("pointermove",e=>{
- if(!dragging)return;
- let dx=e.clientX-start;
- x+=dx;
- moved+=Math.abs(dx);
+/* =========================
+   手指 / 鼠标按下
+========================= */
 
- if(x>0){ x=0; }
- if(x<minX){ x=minX; }
+gallery.addEventListener(
 
- velocity=dx;
- start=e.clientX;
-});
+  "pointerdown",
 
-gallery.addEventListener("pointerup", e=>{
-  dragging=false;
+  e => {
 
-  // 位移很小，视为一次点击而不是拖拽
-  if(moved<6){
-    const personEl=e.target.closest(".person");
-    if(personEl){
-      openVideo(personEl.dataset.src);
+    dragging = true;
+
+    start = e.clientX;
+
+    moved = 0;
+
+    velocity = 0;
+
+
+    /*
+      在按下的瞬间记录照片
+
+      不等 pointerup 才找照片
+    */
+
+    activePerson =
+      e.target.closest(".person");
+
+
+    /*
+      如果是照片里的 img，
+      因为 img pointer-events:none，
+      通常 target 会是 person。
+    */
+
+  },
+
+  {
+    passive:false
+  }
+
+);
+
+
+/* =========================
+   手指 / 鼠标移动
+========================= */
+
+gallery.addEventListener(
+
+  "pointermove",
+
+  e => {
+
+    if(!dragging){
+
+      return;
+
     }
+
+
+    e.preventDefault();
+
+
+    const dx =
+      e.clientX - start;
+
+
+    x += dx;
+
+
+    moved +=
+      Math.abs(dx);
+
+
+    if(x > 0){
+
+      x = 0;
+
+    }
+
+
+    if(x < minX){
+
+      x = minX;
+
+    }
+
+
+    velocity = dx;
+
+
+    start = e.clientX;
+
+  },
+
+  {
+    passive:false
   }
 
-  let inertia=velocity*8;
-  function stop(){
-    inertia*=0.92;
-    x+=inertia;
-    if(x>0){ x=0; }
-    if(x<minX){ x=minX; }
-    if(Math.abs(inertia)>0.2)
-      requestAnimationFrame(stop);
+);
+
+
+/* =========================
+   手指 / 鼠标松开
+========================= */
+
+gallery.addEventListener(
+
+  "pointerup",
+
+  e => {
+
+    dragging = false;
+
+
+    /*
+      移动距离很小
+      = 用户是在点击照片
+    */
+
+    if(
+      moved < 8 &&
+      activePerson
+    ){
+
+      const imageName =
+        activePerson.dataset.src;
+
+
+      console.log(
+        "点击照片:",
+        imageName
+      );
+
+
+      openVideo(
+        imageName
+      );
+
+    }
+
+
+    /*
+      清除记录
+    */
+
+    activePerson = null;
+
+
+    /* =====================
+       惯性滑动
+    ===================== */
+
+    let inertia =
+      velocity * 8;
+
+
+    function stop(){
+
+      inertia *= 0.92;
+
+
+      x += inertia;
+
+
+      if(x > 0){
+
+        x = 0;
+
+      }
+
+
+      if(x < minX){
+
+        x = minX;
+
+      }
+
+
+      if(
+        Math.abs(inertia) > 0.2
+      ){
+
+        requestAnimationFrame(
+          stop
+        );
+
+      }
+
+    }
+
+
+    stop();
+
+  },
+
+  {
+    passive:false
   }
-  stop();
-});
 
-// ===== 音频（首次点击播放一次）=====
-const voice = document.getElementById("voice");
-document.addEventListener("click",()=>{
-    voice.play();
-},{once:true});
+);
 
-// ===== 视频弹窗 =====
+
+/* =========================
+   取消操作
+========================= */
+
+gallery.addEventListener(
+
+  "pointercancel",
+
+  () => {
+
+    dragging = false;
+
+    activePerson = null;
+
+  }
+
+);
+
+
+/* =========================
+   音频
+========================= */
+
+const voice =
+  document.getElementById("voice");
+
+
+let audioStarted = false;
+
+
+document.addEventListener(
+
+  "click",
+
+  () => {
+
+    if(audioStarted){
+
+      return;
+
+    }
+
+
+    audioStarted = true;
+
+
+    voice
+      .play()
+      .catch(() => {
+
+        audioStarted = false;
+
+      });
+
+  }
+
+);
+
+
+/* =========================
+   打开视频
+========================= */
+
 function openVideo(imgName){
-    console.log("openVideo被调用，图片名:", imgName);
-  const video = videoMap[imgName];
-    if(!video) return;
 
-    const overlay=document.createElement("div");
-    overlay.className="video-overlay";
-    overlay.innerHTML=`
-        <div class="video-container">
-            <button class="close-video" onclick="closeVideo()">×</button>
-            <video autoplay controls playsinline>
-                <source src="${video}" type="video/mp4">
-            </video>
-        </div>
-    `;
-    document.body.appendChild(overlay);
-console.log("视频窗口已创建");
+  console.log(
+    "openVideo 被调用:",
+    imgName
+  );
+
+
+  const videoFile =
+    videoMap[imgName];
+
+
+  if(!videoFile){
+
+    console.log(
+      "找不到对应视频:",
+      imgName
+    );
+
+    return;
+
+  }
+
+
+  /* =====================
+     创建黑色背景
+  ===================== */
+
+  const overlay =
+    document.createElement(
+      "div"
+    );
+
+
+  overlay.className =
+    "video-overlay";
+
+
+  /* =====================
+     创建视频容器
+  ===================== */
+
+  const container =
+    document.createElement(
+      "div"
+    );
+
+
+  container.className =
+    "video-container";
+
+
+  /* =====================
+     创建关闭按钮
+  ===================== */
+
+  const close =
+    document.createElement(
+      "button"
+    );
+
+
+  close.className =
+    "close-video";
+
+
+  close.type =
+    "button";
+
+
+  close.textContent =
+    "×";
+
+
+  /* =====================
+     创建视频
+  ===================== */
+
+  const video =
+    document.createElement(
+      "video"
+    );
+
+
+  video.controls = true;
+
+
+  /*
+    iPhone / iPad Safari
+    必须保留
+  */
+
+  video.playsInline = true;
+
+
+  video.setAttribute(
+    "playsinline",
+    ""
+  );
+
+
+  video.setAttribute(
+    "webkit-playsinline",
+    ""
+  );
+
+
+  /*
+    只在点击照片之后加载视频
+  */
+
+  video.preload =
+    "metadata";
+
+
+  /*
+    MP4
+  */
+
+  const source =
+    document.createElement(
+      "source"
+    );
+
+
+  source.src =
+    videoFile;
+
+
+  source.type =
+    "video/mp4";
+
+
+  video.appendChild(
+    source
+  );
+
+
+  /* =====================
+     组合
+  ===================== */
+
+  container.appendChild(
+    close
+  );
+
+
+  container.appendChild(
+    video
+  );
+
+
+  overlay.appendChild(
+    container
+  );
+
+
+  document.body.appendChild(
+    overlay
+  );
+
+
+  console.log(
+    "视频窗口已创建:",
+    videoFile
+  );
+
+
+  /* =====================
+     加载视频
+  ===================== */
+
+  video.load();
+
+
+  /*
+    用户刚刚点击了照片，
+    现在尝试播放。
+
+    如果 iPad Safari 不允许
+    自动播放，视频控制栏仍然存在，
+    可以手动点击播放。
+  */
+
+  const playPromise =
+    video.play();
+
+
+  if(playPromise){
+
+    playPromise
+      .then(() => {
+
+        console.log(
+          "视频开始播放"
+        );
+
+      })
+
+      .catch(error => {
+
+        console.log(
+          "Safari 阻止自动播放:",
+          error
+        );
+
+      });
+
+  }
+
+
+  /* =====================
+     关闭按钮
+  ===================== */
+
+  close.addEventListener(
+
+    "click",
+
+    e => {
+
+      e.stopPropagation();
+
+      closeVideo();
+
+    }
+
+  );
+
+
+  /* =====================
+     点击黑色区域关闭
+  ===================== */
+
+  overlay.addEventListener(
+
+    "click",
+
+    e => {
+
+      if(
+        e.target === overlay
+      ){
+
+        closeVideo();
+
+      }
+
+    }
+
+  );
+
 }
+
+
+/* =========================
+   关闭视频
+========================= */
 
 function closeVideo(){
-    const overlay=document.querySelector(".video-overlay");
-    if(overlay){
-        overlay.remove();
-    }
+
+  const overlay =
+    document.querySelector(
+      ".video-overlay"
+    );
+
+
+  if(!overlay){
+
+    return;
+
+  }
+
+
+  const video =
+    overlay.querySelector(
+      "video"
+    );
+
+
+  if(video){
+
+    video.pause();
+
+    video.removeAttribute(
+      "src"
+    );
+
+    video.load();
+
+  }
+
+
+  overlay.remove();
+
 }
+
 </script>
 
+
 </body>
+
 </html>
