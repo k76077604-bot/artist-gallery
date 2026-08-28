@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Artist Gallery Preview</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{touch-action: none;
+-webkit-user-select:none;
+-webkit-touch-callout:none;
+overflow:hidden;
+  background:#fff;
+  height:100vh;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.gallery{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  cursor:default;
+}
+.track{
+  display:flex;
+  align-items:flex-end;
+  will-change:transform;
+}
+.person{
+    flex:none;
+    width:360px;
+    height:78vh;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    cursor:pointer;
+    opacity:.35;
+    filter:blur(10px);
+    transform:scale(.82);
+    transition:.45s ease;
+    user-select:none;
+    position:relative;
+    z-index:2;
+}
+.person img{
+    height:100%;
+    width:auto;
+    display:block;
+    pointer-events:auto;
+    cursor:pointer;
+}
+.person.active{
+  opacity:1;
+  filter:none;
+  transform:scale(1.18) translateY(-15px);
+  z-index:5;
+}
+.hint{
+  position:fixed;
+  right:30px;
+  bottom:25px;
+  color:#aaa;
+  font-size:12px;
+}
+.video-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+.video-container{
+    position:relative;
+    width:75%;
+    max-width:1100px;
+}
+.video-container video{
+    width:100%;
+    max-height:80vh;
+    border-radius:28px;
+    object-fit:contain;
+}
+.close-video{
+    position:absolute;
+    right:-20px;
+    top:-20px;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    border:none;
+    background:white;
+    color:black;
+    font-size:32px;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="gallery" id="gallery">
+  <div class="track" id="track"></div>
+</div>
+
+<div class="hint">← drag →</div>
+
+<audio id="voice" src="zyr.m4a"></audio>
+
+<script>
+const imgs=[
+"p1.PNG",
+"p2.PNG",
+"p3.PNG",
+"p4.PNG",
+"p5.PNG"
+];
+
+const videoMap={
+    "p1.PNG":"s1.mp4",
+    "p2.PNG":"s2.mp4",
+    "p3.PNG":"s3.mp4",
+    "p4.PNG":"s4.mp4",
+    "p5.PNG":"s5.mp4"
+};
+
+const track=document.getElementById("track");
+const gallery=document.getElementById("gallery");
+
+let list=[
+...imgs,
+...imgs,
+...imgs,
+...imgs,
+...imgs
+];
+
+// 只用 data 属性标记图片名，不再绑定 inline onclick，也不重复 addEventListener
+track.innerHTML=list.map(src=>`
+<div class="person" data-src="${src}">
+    <img src="${src}">
+</div>
+`).join("");
+document.querySelectorAll(".person").forEach(item=>{
+    item.addEventListener("click",()=>{
+        openVideo(item.dataset.src);
+    });
+});
+
+let x=-window.innerWidth;
+let minX=-(track.scrollWidth-window.innerWidth);
+let dragging=false;
+let start=0;
+let moved=0;
+let velocity=0;
+
+function render(){
+  track.style.transform=`translateX(${x}px)`;
+  const center=innerWidth/2;
+  document.querySelectorAll(".person").forEach(p=>{
+    const r=p.getBoundingClientRect();
+    const d=Math.abs(center-(r.left+r.width/2));
+    p.classList.toggle("active", d<160);
+  });
+  requestAnimationFrame(render);
+}
+render();
+
+gallery.addEventListener("pointerdown",e=>{
+ dragging=true;
+ start=e.clientX;
+ moved=0;
+ velocity=0;
+ gallery.setPointerCapture(e.pointerId);
+});
+
+gallery.addEventListener("pointermove",e=>{
+ if(!dragging)return;
+ let dx=e.clientX-start;
+ x+=dx;
+ moved+=Math.abs(dx);
+
+ if(x>0){ x=0; }
+ if(x<minX){ x=minX; }
+
+ velocity=dx;
+ start=e.clientX;
+});
+
+gallery.addEventListener("pointerup", e=>{
+  dragging=false;
+
+  // 位移很小，视为一次点击而不是拖拽
+  if(moved<6){
+    const personEl=e.target.closest(".person");
+    if(personEl){
+      openVideo(personEl.dataset.src);
+    }
+  }
+
+  let inertia=velocity*8;
+  function stop(){
+    inertia*=0.92;
+    x+=inertia;
+    if(x>0){ x=0; }
+    if(x<minX){ x=minX; }
+    if(Math.abs(inertia)>0.2)
+      requestAnimationFrame(stop);
+  }
+  stop();
+});
+
+// ===== 音频（首次点击播放一次）=====
+const voice = document.getElementById("voice");
+document.addEventListener("click",()=>{
+    voice.play();
+},{once:true});
+
+// ===== 视频弹窗 =====
+function openVideo(imgName){
+    console.log("openVideo被调用，图片名:", imgName);
+  const video = videoMap[imgName];
+    if(!video) return;
+
+    const overlay=document.createElement("div");
+    overlay.className="video-overlay";
+    overlay.innerHTML=`
+        <div class="video-container">
+            <button class="close-video" onclick="closeVideo()">×</button>
+            <video autoplay controls playsinline>
+                <source src="${video}" type="video/mp4">
+            </video>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+console.log("视频窗口已创建");
+}
+
+function closeVideo(){
+    const overlay=document.querySelector(".video-overlay");
+    if(overlay){
+        overlay.remove();
+    }
+}
+</script>
+
+</body>
+</html>
